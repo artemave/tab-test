@@ -6,7 +6,6 @@ describe Note do
   end
 
   let(:note_id_class) { class_double('NoteID').as_stubbed_const }
-  let(:encryption_class) { class_double('Encryption').as_stubbed_const }
 
   describe '.create' do
     it 'generates unique id' do
@@ -15,17 +14,19 @@ describe Note do
       expect(note.id).to eq 'note_id'
     end
 
-    #TODO test encrypt
-
-    it 'stores note to fs' do
+    it 'stores encrypted note to fs' do
       note_storage_class = class_spy('NoteStorage').as_stubbed_const
+
       note = Note.create(opts)
-      expect(note_storage_class).to have_received(:store).with(name: note.id, content: note.to_json)
+      expected_content = Encryption.encrypt(password: note.password, content: note.to_json)
+
+      expect(note_storage_class).to have_received(:store).with(name: note.id, content: expected_content)
     end
   end
 
   describe '.find' do
     let(:note_storage_class) { class_double('NoteStorage').as_stubbed_const }
+    let(:encryption_class) { class_double('Encryption').as_stubbed_const }
 
     context "files exists" do
       let(:encrypted_content) { double 'encrypted_content' }

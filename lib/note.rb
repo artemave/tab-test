@@ -1,6 +1,7 @@
 require 'active_model'
 require_relative 'note_storage'
 require_relative 'note_id'
+require_relative 'encryption'
 
 class Note
   include ActiveModel::Model
@@ -14,7 +15,8 @@ class Note
 
   def self.create opts = {}
     note = new opts.merge(id: NoteID.generate)
-    NoteStorage.store name: note.id, content: note.to_json
+    encrypted_note = Encryption.encrypt password: note.password, content: note.to_json
+    NoteStorage.store name: note.id, content: encrypted_note
     note
   end
 
