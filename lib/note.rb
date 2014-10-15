@@ -1,4 +1,5 @@
 require 'active_model'
+require_relative 'note_storage'
 require_relative 'note_id'
 
 class Note
@@ -13,6 +14,7 @@ class Note
 
   def self.create opts = {}
     note = new opts.merge(id: NoteID.generate)
+    NoteStorage.store name: note.id, content: note.to_json
     note
   end
 

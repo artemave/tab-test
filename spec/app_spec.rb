@@ -6,15 +6,17 @@ describe 'App' do
   end
 
   let(:note) {
-    double('Note', id: 'note_id', password: 'secret', to_json: {
+    instance_double('Note', id: 'note_id', password: 'secret', to_json: {
       'title' => opts['title'],
       'text' => opts['text'],
       'id' => 'note_id'
     }.to_json)
   }
 
+  let(:note_class) { class_double('Note').as_stubbed_const }
+
   it 'creates a note' do
-    allow(Note).to receive(:create).with(opts).and_return(note)
+    allow(note_class).to receive(:create).with(opts).and_return(note)
 
     post '/notes', opts
 
@@ -25,7 +27,7 @@ describe 'App' do
   end
 
   it 'returns a note' do
-    allow(Note).to receive(:find).with(id: note.id, password: note.password).and_return(note)
+    allow(note_class).to receive(:find).with(id: note.id, password: note.password).and_return(note)
 
     get "/notes/#{note.id}?password=#{note.password}"
 
