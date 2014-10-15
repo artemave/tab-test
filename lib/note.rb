@@ -19,7 +19,8 @@ class Note
   end
 
   def self.find(id:, password:)
-    note = new password: password
-    note
+    encrypted_content = NoteStorage.fetch(id)
+    content_json = Encryption.decrypt(password: password, encrypted_content: encrypted_content)
+    new JSON.load content_json
   end
 end
